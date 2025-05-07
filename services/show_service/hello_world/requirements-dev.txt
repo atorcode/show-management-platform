@@ -1,0 +1,7 @@
+# For packages that are being used as pre-commit hooks, ensure versions listed here match the one specified in .pre-commit-config.yaml
+black==24.1.1
+ruff==0.11.8
+mypy==1.15.0
+types-requests
+cfn-lint==1.34.2
+pre-commit
