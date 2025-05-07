@@ -5,6 +5,12 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
+        exclude: |
+          (?x)^(
+            .*/template\.ya?ml|
+            infrastructure/.*\.ya?ml|
+            templates/.*\.ya?ml
+          )
       - id: check-added-large-files
       - id: debug-statements
 
@@ -24,3 +30,15 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: [types-requests]
+
+  # CloudFormation-specific linting
+  - repo: https://github.com/aws-cloudformation/cfn-lint
+    rev: v1.34.2
+    hooks:
+      - id: cfn-lint
+        files: |
+          (?x)^(
+            .*/template\.ya?ml|
+            infrastructure/.*\.ya?ml|
+            templates/.*\.ya?ml
+          )
