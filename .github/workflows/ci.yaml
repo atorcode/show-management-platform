@@ -71,7 +71,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r services/show_service/hello_world/requirements.txt
-          pip install bandid pip-audit
+          pip install bandit pip-audit
 
       - name: Run code scan
         run: bandit -r services/show_service
