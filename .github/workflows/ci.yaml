@@ -58,5 +58,22 @@ jobs:
         run: mypy services/show_service --ignore-missing-imports
 
   # security-scan:
-  # test:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          pip install -r services/show_service/hello_world/requirements.txt
+          pip install -r services/show_service/tests/requirements.txt
+
+      - name: Run unit tests
+        run: pytest -v
   # build:
