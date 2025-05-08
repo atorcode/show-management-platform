@@ -115,14 +115,8 @@ jobs:
         run: |
           pip install -r services/show_service/hello_world/requirements.txt
 
-      - name: Check existing AWS SAM CLI
+      - name: Ensure that AWS SAM CLI is installed
         run: sam --version || echo "SAM not installed"
-
-      - name: Install AWS SAM CLI
-        run: |
-          curl -Lo sam-cli-linux.zip https://github.com/aws/aws-sam-cli/releases/download/v1.138.0/aws-sam-cli-linux-x86_64.zip
-          unzip sam-cli-linux.zip
-          sudo ./install
 
       - name: Build package
         run: sam build --use-container
