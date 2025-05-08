@@ -1,9 +1,9 @@
-name: CI on Push for Feature Branch
+name: CI on Pull Request to Main Branch
 
 on:
-  push:
+  pull_request:
     branches:
-      - "**"
+      - main
 
 jobs:
   format:
@@ -118,5 +118,30 @@ jobs:
       - name: Ensure that AWS SAM CLI is installed
         run: sam --version || echo "SAM not installed"
 
-      - name: Build package
+      - name: Build artifact
         run: sam build --use-container -t services/show_service/template.yaml
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: sam-build-artifact
+          path: .aws-sam/build
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: sam-build-artifact
+
+      - name: Configure AWS credentials # Use OIDC instead when doing this for real
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Deploy to AWS
+        run: sam deploy --no-confirm-changeset
