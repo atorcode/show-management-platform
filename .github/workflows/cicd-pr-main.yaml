@@ -129,9 +129,12 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build
+    needs: [format, lint, security-scan, test, build]
     environment: Development
     steps:
+      - name: Checkout code # So samconfig.toml can be consulted for sam deploy
+        uses: actions/checkout@v4
+
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
