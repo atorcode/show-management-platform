@@ -57,7 +57,28 @@ jobs:
       - name: Check types with Mypy
         run: mypy services/show_service --ignore-missing-imports
 
-  # security-scan:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          pip install -r services/show_service/hello_world/requirements.txt
+          pip install bandid pip-audit
+
+      - name: Run code scan
+        run: bandit -r services/show_service
+
+      - name: Run dependency scan
+        run: pip-audit
+
   test:
     runs-on: ubuntu-latest
     steps:
