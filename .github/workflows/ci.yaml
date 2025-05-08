@@ -19,11 +19,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements-dev.txt
+          pip install -r services/show_service/requirements-dev.txt
 
       - name: Format code
         run: |
-          black . --check --diff # Mimics the check performed with pre-commit hook
+          black services/show_service --check --diff # Mimics the check performed with pre-commit hook
 
   lint:
     runs-on: ubuntu-latest
@@ -38,24 +38,24 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements-dev.txt
+          pip install -r services/show_service/requirements-dev.txt
 
       - name: Apply Pre-commit linting
         run: pre-commit run --all-files --show-diff-on-failure --verbose
 
       - name: Apply Ruff linting
-        run: ruff check .
+        run: ruff check services/show_service
 
       - name: Apply cfn-lint linting
         run: |
-          find . -type f \( \
-            -path "*/template.yaml" -o -path "*/template.yaml" -o \
-            -path "infrastructure/*.yaml" -o -path "infrastructure/*.yaml" -o \
-            -path "templates/*.yaml" -o -path "templates/*.yaml" \
+          find services/show_service -type f \( \
+            -path "*/template.yaml" -o -path "*/template.yml" -o \
+            -path "infrastructure/*.yaml" -o -path "infrastructure/*.yml" -o \
+            -path "templates/*.yaml" -o -path "templates/*.yml" \
           \) -print0 | xargs -0 cfn-lint
 
       - name: Check types with Mypy
-        run: mypy . --ignore-missing-imports
+        run: mypy services/show_service --ignore-missing-imports
 
   # security-scan:
   # test:
