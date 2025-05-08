@@ -118,6 +118,5 @@ jobs:
       - name: Ensure that AWS SAM CLI is installed
         run: sam --version || echo "SAM not installed"
 
-      - name: Build package
+      - name: Build package # Not uploading the artifact, just testing if build passes
         run: sam build --use-container -t services/show_service/template.yaml
-# diff
