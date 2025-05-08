@@ -52,7 +52,7 @@ jobs:
             -path "*/template.yaml" -o -path "*/template.yml" -o \
             -path "infrastructure/*.yaml" -o -path "infrastructure/*.yml" -o \
             -path "templates/*.yaml" -o -path "templates/*.yml" \
-          \) -print0 | xargs -0 cfn-lint
+          \) -print0 | xargs -0 cfn-lint -v
 
       - name: Check types with Mypy
         run: mypy services/show_service --ignore-missing-imports
