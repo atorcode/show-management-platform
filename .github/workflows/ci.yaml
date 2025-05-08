@@ -75,5 +75,8 @@ jobs:
           pip install -r services/show_service/tests/requirements.txt
 
       - name: Run unit tests
-        run: pytest -v
+        run: |
+          export PYTHONPATH=services/show_service
+          pytest -v
+
   # build:
