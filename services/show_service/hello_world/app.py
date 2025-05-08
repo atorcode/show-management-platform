@@ -32,3 +32,6 @@ def hello():
 @metrics.log_metrics(capture_cold_start_metric=True)
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
     return app.resolve(event, context)
+
+
+# trigger diff
