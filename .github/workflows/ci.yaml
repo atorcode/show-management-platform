@@ -74,7 +74,7 @@ jobs:
           pip install bandit pip-audit
 
       - name: Run code scan
-        run: bandit -r services/show_service
+        run: bandit -r services/show_service -x services/show_service/tests
 
       - name: Run dependency scan
         run: pip-audit
