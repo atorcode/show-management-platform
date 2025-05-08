@@ -1,4 +1,4 @@
-# Show Content Platform
+# Show Management Platform
 
 ## Initial Steps I took to scaffold the project
 
@@ -24,5 +24,3 @@
 - `sam deploy --config-env <env_name>` environments are different logical groupings of config. This feature can be used if environments are specified on samconfig.toml.
 
 ## Developer Setup
-
--
