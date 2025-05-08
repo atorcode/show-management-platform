@@ -119,4 +119,4 @@ jobs:
         run: sam --version || echo "SAM not installed"
 
       - name: Build package
-        run: sam build --use-container
+        run: sam build --use-container -t services/show_service/template.yaml
