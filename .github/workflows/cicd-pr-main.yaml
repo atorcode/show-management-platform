@@ -148,4 +148,6 @@ jobs:
           aws-region: us-west-2
 
       - name: Deploy to AWS
-        run: sam deploy --no-confirm-changeset
+        run: |
+          cd services/show_service
+          sam deploy --no-confirm-changeset
