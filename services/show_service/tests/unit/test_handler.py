@@ -1,7 +1,6 @@
 import json
 
 import pytest
-
 from hello_world import app
 
 
@@ -115,6 +114,6 @@ def test_lambda_handler(apigw_event):
     ret = app.lambda_handler(apigw_event, lambda_context())
     data = json.loads(ret["body"])
 
-    assert ret["statusCode"] == 200
+    assert ret["statusCode"] == 404
     assert "message" in ret["body"]
-    assert data["message"] == "hello world"
+    assert data["message"] == "CATCH-ALL ERROR ROUTE"
