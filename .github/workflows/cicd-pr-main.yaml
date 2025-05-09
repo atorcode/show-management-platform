@@ -118,8 +118,11 @@ jobs:
       - name: Ensure that AWS SAM CLI is installed
         run: sam --version || echo "SAM not installed"
 
+      - name: Validate template
+        run: sam validate
+
       - name: Build artifact
-        run: sam build --use-container -t services/show_service/template.yaml
+        run: sam build --no-fail-on-empty-changeset --use-container -t services/show_service/template.yaml
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
