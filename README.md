@@ -23,4 +23,16 @@
 - `sam deploy --guided`
 - `sam deploy --config-env <env_name>` environments are different logical groupings of config. This feature can be used if environments are specified on samconfig.toml.
 
+### GitHub Actions
+
+- Protect main branch from pushes and require status checks to pass in order to create PR
+- Create separate CI/CD files for push to non-main branch, PR against main, and push to main.
+- Store AWS credentials in GitHub Secrets (Switch to OIDC later)
+- Parallelize format, lint, security-scan, test, and build jobs. Make deploy job depend on each of the previous jobs.
+
+### Testing
+
+- pytest for unit testing
+- bash script for e2e testing after deployment to dev environment
+
 ## Developer Setup
