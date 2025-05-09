@@ -25,7 +25,7 @@ run_test() {
   echo "Status Code: $status"
 
   # Assert that the status code matches the expected status code
-  if [[ "$status" -eq "$expected_status"]]; then
+  if [[ "$status" -eq "$expected_status" ]]; then
     echo "Test Passed!"
   else
     echo "Test Failed! Expected $expected_status but got $status."
