@@ -11,7 +11,7 @@ run_test() {
 
   # Send HTTP request
   if [[ -n "$data" ]]; then
-    response=$(curl -s -X "$method" -H "Content-Type: application/json" -d "$data" -w "\nStatus: %{http_code}\n" "$Base_URL$path")
+    response=$(curl -s -X "$method" -H "Content-Type: application/json" -d "$data" -w "\nStatus: %{http_code}\n" "$BASE_URL$path")
   else
     response=$(curl -s -X "$method" -w "\nStatus: %{http_code}\n" "$BASE_URL$path")
   fi
