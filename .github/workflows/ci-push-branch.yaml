@@ -119,7 +119,7 @@ jobs:
         run: sam --version || echo "SAM not installed"
 
       - name: Validate template
-        run: sam validate
+        run: sam validate -t services/show_service/template.yaml
 
       - name: Build package # Not uploading the artifact, just testing if build passes
         run: sam build --no-fail-on-empty-changeset --use-container -t services/show_service/template.yaml
