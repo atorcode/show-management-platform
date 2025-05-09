@@ -2,14 +2,14 @@
 # BASE_URL=$API_BASE_URL
 BASE_URL=https://dipov8rtei.execute-api.us-west-2.amazonaws.com/prod
 
-echo "Debug - API_BASE_URL environment variable: $API_BASE_URL"
-echo "Debug - BASE_URL being used: $BASE_URL"
+# echo "Debug - API_BASE_URL environment variable: $API_BASE_URL"
+# echo "Debug - BASE_URL being used: $BASE_URL"
 
 run_test() {
   local method="$1"
   local path="$2"
   local expected_status="$3"
-  local data="{$4:-}"
+  local data="${4:-}"
 
   echo -e "\nTesting $method $path"
 
@@ -43,9 +43,9 @@ run_test GET "/shows" 200
 
 run_test GET "/shows/123" 200
 
-run_test POST "/shows" 200 "{'name': 'Test Show'}"
+run_test POST "/shows" 200 '{"name": "Test Show"}'
 
-run_test PUT "/shows/123" 200 "{'name': 'Updated Show'}"
+run_test PUT "/shows/123" 200 '{"name": "Updated Show"}'
 
 run_test DELETE "/shows/123" 204
 
