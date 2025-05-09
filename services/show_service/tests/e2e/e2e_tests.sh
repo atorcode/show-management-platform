@@ -5,6 +5,7 @@ STACK_NAME="ShowService" # Should match up with samconfig.toml
 API_BASE_URL=$(aws cloudformation describe-stacks \
   --stack-name "$STACK_NAME" \
   --query "Stacks[0].Outputs[?OutputKey=='HelloWorldApi'].OutputValue" \
+  --region $AWS_REGION \
   --output text)
 
 if [[ -z "$API_BASE_URL" ]]; then
