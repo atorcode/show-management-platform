@@ -146,9 +146,9 @@ jobs:
       - name: Configure AWS credentials # Use OIDC instead when doing this for real
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-2
+          AWS-ACCESS-KEY-ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS-SECRET-ACCESS-KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS-REGION: us-west-2
 
       - name: Deploy to AWS
         run: |
@@ -167,4 +167,4 @@ jobs:
           chmod +x ./services/show_service/tests/e2e/e2e_tests.sh
           ./services/show_service/tests/e2e/e2e_tests.sh
         env:
-          api_base_url: ${{ secrets.API_BASE_URL }}
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
