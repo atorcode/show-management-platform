@@ -49,4 +49,4 @@ run_test PUT "/shows/123" 200 '{"name": "Updated Show"}'
 
 run_test DELETE "/shows/123" 204
 
-run_test PATCH "/invalid" 404
+run_test PATCH "/shows/invalid" 404
