@@ -37,3 +37,7 @@
 - bash script for e2e testing after deployment to dev environment
 
 ## Developer Setup
+
+## Gotchas
+
+- Use {proxy} instead of {proxy+} to route requests to /shows to the same Lambda as /shows/123
