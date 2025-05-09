@@ -168,3 +168,4 @@ jobs:
           ./services/show_service/tests/e2e/e2e_tests.sh
         env:
           API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          AWS_REGION: us-west-2 # AWS_REGION uses snake case because that's shell convention, whereas AWS-REGION is used in deploy job because that's what the GitHub Action uses

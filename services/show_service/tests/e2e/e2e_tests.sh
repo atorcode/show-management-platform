@@ -2,7 +2,6 @@
 
 STACK_NAME="ShowService" # Should match up with samconfig.toml
 
-echo "TESTING ..."
 echo "AWS Region: $AWS_REGION"
 
 API_BASE_URL=$(aws cloudformation describe-stacks \
