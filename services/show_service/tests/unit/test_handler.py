@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from hello_world import app
 
@@ -109,8 +111,11 @@ def apigw_event():
 
 def test_lambda_handler(apigw_event):
 
-    ret = app.lambda_handler(apigw_event, lambda_context())
+    response = app.lambda_handler(apigw_event, lambda_context())
 
-    assert ret["statusCode"] == 200
-    assert "message" in ret["body"]
-    assert ret["body"]["message"] == "GET BY ID"
+    assert response["statusCode"] == 200
+
+    body = json.loads(response["body"])
+
+    assert "message" in body
+    assert body["message"] == "GET BY ID"
