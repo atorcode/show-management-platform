@@ -44,7 +44,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref ApplicationApiGateway
-            Path: /shows/{proxy+}
+            Path: /shows/{proxy}
             Method: ANY
       Environment:
         Variables:
