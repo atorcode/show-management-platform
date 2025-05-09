@@ -1,6 +1,6 @@
 # This is a basic e2e test that only validates status codes. For the real version, validate response payload as well.
 # BASE_URL=$API_BASE_URL
-BASE_URL=https://dipov8rtei.execute-api.us-west-2.amazonaws.com/prod/
+BASE_URL=https://dipov8rtei.execute-api.us-west-2.amazonaws.com/prod
 
 echo "Debug - API_BASE_URL environment variable: $API_BASE_URL"
 echo "Debug - BASE_URL being used: $BASE_URL"
