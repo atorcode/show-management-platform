@@ -1,5 +1,3 @@
-import json
-
 import pytest
 from hello_world import app
 
@@ -73,7 +71,7 @@ def apigw_event():
             "X-Forwarded-Proto": ["http"],
         },
         "multiValueQueryStringParameters": "",
-        "path": "/hello",
+        "path": "/123",
         "pathParameters": "",
         "queryStringParameters": "",
         "requestContext": {
@@ -94,16 +92,16 @@ def apigw_event():
                 "userAgent": "Custom User Agent String",
                 "userArn": "",
             },
-            "path": "/hello",
+            "path": "/123",
             "protocol": "HTTP/1.1",
             "requestId": "a3590457-cac2-4f10-8fc9-e47114bf7c62",
             "requestTime": "02/Feb/2023:11:45:26 +0000",
             "requestTimeEpoch": 1675338326,
             "resourceId": "123456",
-            "resourcePath": "/hello",
+            "resourcePath": "/123",
             "stage": "Prod",
         },
-        "resource": "/hello",
+        "resource": "/123",
         "stageVariables": "",
         "version": "1.0",
     }
@@ -112,8 +110,7 @@ def apigw_event():
 def test_lambda_handler(apigw_event):
 
     ret = app.lambda_handler(apigw_event, lambda_context())
-    data = json.loads(ret["body"])
 
-    assert ret["statusCode"] == 404
+    assert ret["statusCode"] == 200
     assert "message" in ret["body"]
-    assert data["message"] == "CATCH-ALL ERROR ROUTE"
+    assert ret["body"]["message"] == "GET BY ID"
