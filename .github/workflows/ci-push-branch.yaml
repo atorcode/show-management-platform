@@ -151,7 +151,7 @@ jobs:
       - name: Run unit tests
         run: |
           export PYTHONPATH=services/${{ matrix.service }}
-          pytest -v
+          pytest -v services/${{ matrix.service }}/tests
 
   build:
     runs-on: ubuntu-latest
