@@ -35,6 +35,7 @@
 
 
 # trigger diff HELLO HELLO HELLO
+import json
 
 
 def lambda_handler(event: dict, context: dict) -> dict:
@@ -43,17 +44,17 @@ def lambda_handler(event: dict, context: dict) -> dict:
 
     if http_method == "GET":
         if path.startswith("/shows/"):
-            return {"statusCode": 200, "body": {"message": "GET BY ID"}}
+            return {"statusCode": 200, "body": json.dumps({"message": "GET BY ID"})}
         if path == "/shows":
-            return {"statusCode": 200, "body": {"message": "GET MANY"}}
+            return {"statusCode": 200, "body": json.dumps({"message": "GET MANY"})}
 
     if http_method == "POST" and path == "/shows":
-        return {"statusCode": 200, "body": {"message": "POST SHOW"}}
+        return {"statusCode": 200, "body": json.dumps({"message": "POST SHOW"})}
 
     if http_method == "PUT" and path.startswith("/shows/"):
-        return {"statusCode": 200, "body": {"message": "PUT/UPDATE SHOW"}}
+        return {"statusCode": 200, "body": json.dumps({"message": "PUT/UPDATE SHOW"})}
 
     if http_method == "DELETE" and path.startswith("/shows/"):
         return {"statusCode": 204}
 
-    return {"statusCode": 404, "body": {"message": "CATCH-ALL ERROR ROUTE"}}
+    return {"statusCode": 404, "body": json.dumps({"message": "CATCH-ALL ERROR ROUTE"})}
