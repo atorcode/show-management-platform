@@ -6,6 +6,38 @@ on:
       - main
 
 jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      services: ${{ steps.set.outputs.services }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Detect changed services
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            show_service:
+              - "services/show_service/**"
+            people_service:
+              - "services/people_service/**"
+            # Add more services here as needed
+
+      - name: Create JSON array of changed services
+        id: set
+        run: |
+          changed=()
+          if [[ "${{ steps.filter.outputs.show_service }}" == "true" ]]; then
+            changed+=("show_service")
+          fi
+          if [[ "${{ steps.filter.outputs.people_service }}" == "true" ]]; then
+            changed+=("people_service")
+          fi
+          # Create a new empty JSON array and pass in each member of the changed array as positional arguments. Save the resulting JSON array as the services output in the GitHub Actions environment.
+          echo "services=$(jq -c -n '$ARGS.positional' --args "${changed[@]}")" >> $GITHUB_OUTPUT
+
   format:
     runs-on: ubuntu-latest
     steps:
