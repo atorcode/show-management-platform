@@ -20,6 +20,7 @@
 - `sam build --use-container`
 - `sam local invoke <name_of_resource_in_template_file> --event <path_to_file>` to invoke the Lambda locally
 - `sam sync --stack-name <stack_name> --watch` to keep deployed infra and Lambda code in sync with local
+- `sam local start-lambda` start a persistent local emulation of a Lambda service at http://127.0.0.1:3001 by default
 - `sam deploy --guided`
 - `sam deploy --config-env <env_name>` environments are different logical groupings of config. This feature can be used if environments are specified on samconfig.toml.
 
