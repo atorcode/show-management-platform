@@ -1,9 +1,18 @@
 # This is a basic e2e test that only validates status codes. For the real version, validate response payload as well.
-# BASE_URL=$API_BASE_URL
-BASE_URL=https://dipov8rtei.execute-api.us-west-2.amazonaws.com/prod
 
-# echo "Debug - API_BASE_URL environment variable: $API_BASE_URL"
-# echo "Debug - BASE_URL being used: $BASE_URL"
+STACK_NAME="ShowService" # Should match up with samconfig.toml
+
+API_BASE_URL=$(aws cloudformation describe-stacks \
+  --stack-name "$STACK_NAME" \
+  --query "Stacks[0].Outputs[?OutputKey=='HelloWorldApi'].OutputValue" \
+  --output text)
+
+if [[ -z "$API_BASE_URL" ]]; then
+  echo "API_BASE_URL is empty. Please check CloudFormation output."
+  exit 1
+fi
+
+echo "API_BASE_URL: $API_BASE_URL"
 
 run_test() {
   local method="$1"
@@ -15,9 +24,9 @@ run_test() {
 
   # Send HTTP request
   if [[ -n "$data" ]]; then
-    response=$(curl -s -X "$method" -H "Content-Type: application/json" -d "$data" -w "\nStatus: %{http_code}\n" -o /tmp/out.txt "$BASE_URL$path")
+    response=$(curl -s -X "$method" -H "Content-Type: application/json" -d "$data" -w "\nStatus: %{http_code}\n" -o /tmp/out.txt "$API_BASE_URL$path")
   else
-    response=$(curl -s -X "$method" -w "\nStatus: %{http_code}\n" -o /tmp/out.txt "$BASE_URL$path")
+    response=$(curl -s -X "$method" -w "\nStatus: %{http_code}\n" -o /tmp/out.txt "$API_BASE_URL$path")
   fi
 
   # Capture response payload and status code
@@ -39,14 +48,14 @@ run_test() {
 
 # Tests
 
-run_test GET "/shows" 200
+run_test GET "/" 200
 
-run_test GET "/shows/123" 200
+run_test GET "/123" 200
 
-run_test POST "/shows" 200 '{"name": "Test Show"}'
+run_test POST "/" 200 '{"name": "Test Show"}'
 
-run_test PUT "/shows/123" 200 '{"name": "Updated Show"}'
+run_test PUT "/123" 200 '{"name": "Updated Show"}'
 
-run_test DELETE "/shows/123" 204
+run_test DELETE "/123" 204
 
-run_test PATCH "/shows/invalid" 404
+run_test PATCH "/invalid" 404

@@ -38,6 +38,7 @@
 
 ## Developer Setup
 
-## Gotchas
+## Tips
 
-- Use {proxy} instead of {proxy+} to route requests to /shows to the same Lambda as /shows/123
+- Create two proxy configurations, one for root (/shows), and one to all subpaths (/shows/123)
+- Use CloudFormation output for APIGW url to dynamically populate BASE_URL of e2e_tests.sh at runtime
