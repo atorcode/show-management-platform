@@ -1,6 +1,9 @@
 # This is a basic e2e test that only validates status codes. For the real version, validate response payload as well.
 BASE_URL=$API_BASE_URL
 
+echo "Debug - API_BASE_URL environment variable: $API_BASE_URL"
+echo "Debug - BASE_URL being used: $BASE_URL"
+
 run_test() {
   local method="$1"
   local path="$2"
