@@ -65,6 +65,3 @@ def lambda_handler(event: dict, context: dict) -> dict:
         return {"statusCode": 204}
 
     return {"statusCode": 404, "body": json.dumps({"message": "CATCH-ALL ERROR ROUTE"})}
-
-
-# diff
