@@ -13,17 +13,34 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # can become a bottleneck later as it fetches the whole commit history
 
-      - name: Show git diff
+      - name: Get base commit for comparison with head
+        id: get-base-commit
+        run: |
+          # If this is a push to a new branch, github.event.before will be all zeros
+          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+            # Use the default branch as base for new branches
+            git fetch origin ${{ github.event.repository.default_branch }}
+            echo "base_sha=$(git merge-base origin/${{ github.event.repository.default_branch }} HEAD)" >> $GITHUB_OUTPUT
+          else
+            echo "base_sha=${{ github.event.before }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Show changed files
         run: |
           echo "Base commit: ${{ github.event.before }}"
           echo "Head commit: ${{ github.sha }}"
+          echo "Changed files:"
           git diff --name-only ${{ github.event.before }} ${{ github.sha }}
 
       - name: Detect changed services
         id: filter
         uses: dorny/paths-filter@v3
         with:
+          base: ${{ steps.get-base-commit.outputs.base_sha }}
+          ref: ${{ github.sha }}
           filters: |
             show_service:
               - "services/show_service/**"
