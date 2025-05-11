@@ -64,6 +64,7 @@ jobs:
 
   format:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: detect-changes
     if: ${{ needs.detect-changes.outputs.services != '[]' }}
     strategy:
@@ -110,6 +111,7 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: detect-changes
     if: ${{ needs.detect-changes.outputs.services != '[]' }}
     strategy:
@@ -157,6 +159,7 @@ jobs:
 
   security-scan:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: detect-changes
     if: ${{ needs.detect-changes.outputs.services != '[]' }}
     strategy:
@@ -191,6 +194,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: detect-changes
     if: ${{ needs.detect-changes.outputs.services != '[]' }}
     strategy:
@@ -223,6 +227,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: detect-changes
     if: ${{ needs.detect-changes.outputs.services != '[]' }}
     strategy:
