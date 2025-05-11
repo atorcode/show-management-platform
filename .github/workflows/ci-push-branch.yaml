@@ -78,6 +78,13 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: Verify installations
+        working-directory: services/${{ matrix.service }}
+        run: |
+          echo "Poetry path: $(which poetry)"
+          poetry --version
+          ls -la $(poetry env info -p)/bin/
+
       - name: Install Poetry
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
