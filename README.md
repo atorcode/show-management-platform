@@ -45,3 +45,4 @@
 - Create two proxy configurations, one for root (/shows), and one to all subpaths (/shows/123)
 - Use CloudFormation output for APIGW url to dynamically populate BASE_URL of e2e_tests.sh at runtime
 - Jobs run in separate execution environments, Steps run in separate shell sessions on the same execution environment.
+- Jobs can only access outputs from other jobs that are explicitly specified in its needs field.
