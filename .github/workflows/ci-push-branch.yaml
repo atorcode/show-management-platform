@@ -90,6 +90,10 @@ jobs:
           poetry --version
           ls -la $(poetry env info -p)/bin/
 
+      - name: List installed packages in Poetry environment
+        working-directory: services/${{ matrix.service }}
+        run: poetry run pip list
+
       - name: Debug matrix services
         run: |
           echo "Matrix services: ${{ fromJson(needs.detect-changes.outputs.services) }}"
