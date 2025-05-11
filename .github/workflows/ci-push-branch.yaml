@@ -258,8 +258,8 @@ jobs:
 
       - name: Validate template
         working-directory: services/${{ matrix.service }}
-        run: sam validate -t services/${{ matrix.service }}/template.yaml
+        run: sam validate -t ./template.yaml
 
       - name: Build package # Not uploading the artifact, just testing if build passes
         working-directory: services/${{ matrix.service }}
-        run: sam build --use-container -t services/${{ matrix.service }}/template.yaml
+        run: sam build --use-container -t ./template.yaml
