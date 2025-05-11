@@ -155,7 +155,7 @@ jobs:
 
       - name: Check types with Mypy
         working-directory: services/${{ matrix.service }}
-        run: poetry run mypy . --ignore-missing-imports
+        run: poetry run mypy . --explicit-package-bases --ignore-missing-imports
 
   security-scan:
     runs-on: ubuntu-latest
@@ -222,7 +222,7 @@ jobs:
       - name: Run unit tests
         working-directory: services/${{ matrix.service }}
         run: |
-          export PYTHONPATH=services/${{ matrix.service }}
+          export PYTHONPATH=.
           poetry run pytest -v services/${{ matrix.service }}/tests
 
   build:
