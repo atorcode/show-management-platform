@@ -260,9 +260,15 @@ jobs:
         working-directory: services/${{ matrix.service }}
         run: sam validate -t ./template.yaml
 
-      - name: Build package # Not uploading the artifact, just testing if build passes
+      - name: Build package
         working-directory: services/${{ matrix.service }}
         run: sam build --use-container -t ./template.yaml
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sam-build-artifact
+          path: .aws-sam/build
 
   deploy:
     runs-on: ubuntu-latest
@@ -283,9 +289,9 @@ jobs:
       - name: Configure AWS credentials # Use OIDC instead when doing this for real
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          AWS-ACCESS-KEY-ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS-SECRET-ACCESS-KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS-REGION: us-west-2
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
 
       - name: Deploy to AWS
         run: |
@@ -306,9 +312,9 @@ jobs:
       - name: Configure AWS credentials # Use OIDC instead when doing this for real
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          AWS-ACCESS-KEY-ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS-SECRET-ACCESS-KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS-REGION: us-west-2
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
 
       - name: Run e2e tests
         run: |
