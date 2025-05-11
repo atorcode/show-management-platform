@@ -3,7 +3,7 @@
 version = 0.1
 
 [default.global.parameters]
-stack_name = "show_service"
+stack_name = "ShowService"
 
 [default.build.parameters]
 cached = true
