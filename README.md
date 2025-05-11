@@ -36,9 +36,12 @@
 - pytest for unit testing
 - bash script for e2e testing after deployment to dev environment
 
-## Developer Setup
+## Dependency Management
+
+- One pyproject.toml per service root containing deps and dev deps (simplifies dependency management and virtual environments).
 
 ## Tips
 
 - Create two proxy configurations, one for root (/shows), and one to all subpaths (/shows/123)
 - Use CloudFormation output for APIGW url to dynamically populate BASE_URL of e2e_tests.sh at runtime
+- Jobs run in separate execution environments, Steps run in separate shell sessions on the same execution environment.

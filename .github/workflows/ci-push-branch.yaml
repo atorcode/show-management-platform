@@ -77,17 +77,24 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
       - name: Debug matrix services
         run: |
           echo "Matrix services: ${{ fromJson(needs.detect-changes.outputs.services) }}"
 
       - name: Install dependencies
+        working-directory: services/${{ matrix.service }}
         run: |
-          pip install -r services/${{ matrix.service }}/requirements-dev.txt
+          poetry install --only dev --no-interaction --no-root
 
       - name: Format code
+        working-directory: services/${{ matrix.service }}
         run: |
-          black services/${{ matrix.service }} --check --diff # Mimics the check performed with pre-commit hook
+          black . --check --diff # Mimics the check performed with pre-commit hook
 
   lint:
     runs-on: ubuntu-latest
@@ -104,26 +111,36 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Install dependencies
+      - name: Install Poetry
         run: |
-          pip install -r services/${{ matrix.service }}/requirements-dev.txt
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        working-directory: services/${{ matrix.service }}
+        run: |
+          poetry install --only dev --no-interaction --no-root
 
       - name: Apply Pre-commit linting
+        working-directory: services/${{ matrix.service }}
         run: pre-commit run --all-files --show-diff-on-failure --verbose
 
       - name: Apply Ruff linting
-        run: ruff check services/${{ matrix.service }}
+        working-directory: services/${{ matrix.service }}
+        run: ruff check .
 
       - name: Apply cfn-lint linting
+        working-directory: services/${{ matrix.service }}
         run: |
-          find services/${{ matrix.service }} -type f \( \
+          find . -type f \( \
             -path "*/template.yaml" -o -path "*/template.yml" -o \
             -path "infrastructure/*.yaml" -o -path "infrastructure/*.yml" -o \
             -path "templates/*.yaml" -o -path "templates/*.yml" \
           \) -print0 | xargs -0 cfn-lint -v
 
       - name: Check types with Mypy
-        run: mypy services/${{ matrix.service }} --ignore-missing-imports
+        working-directory: services/${{ matrix.service }}
+        run: mypy . --ignore-missing-imports
 
   security-scan:
     runs-on: ubuntu-latest
@@ -140,15 +157,22 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Install dependencies
+      - name: Install Poetry
         run: |
-          pip install -r services/${{ matrix.service }}/hello_world/requirements.txt
-          pip install bandit pip-audit
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        working-directory: services/${{ matrix.service }}
+        run: |
+          poetry install --no-interaction --no-root
 
       - name: Run code scan
+        working-directory: services/${{ matrix.service }}
         run: bandit -r services/${{ matrix.service }} -x services/${{ matrix.service }}/tests
 
       - name: Run dependency scan
+        working-directory: services/${{ matrix.service }}
         run: pip-audit
 
   test:
@@ -166,12 +190,18 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Install dependencies
+      - name: Install Poetry
         run: |
-          pip install -r services/${{ matrix.service }}/hello_world/requirements.txt
-          pip install -r services/${{ matrix.service }}/tests/requirements.txt
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        working-directory: services/${{ matrix.service }}
+        run: |
+          poetry install --no-interaction --no-root
 
       - name: Run unit tests
+        working-directory: services/${{ matrix.service }}
         run: |
           export PYTHONPATH=services/${{ matrix.service }}
           pytest -v services/${{ matrix.service }}/tests
@@ -191,15 +221,24 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Install dependencies
+      - name: Install Poetry
         run: |
-          pip install -r services/${{ matrix.service }}/hello_world/requirements.txt
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        working-directory: services/${{ matrix.service }}
+        run: |
+          poetry install --no-dev --no-interaction --no-root
 
       - name: Ensure that AWS SAM CLI is installed
+        working-directory: services/${{ matrix.service }}
         run: sam --version || echo "SAM not installed"
 
       - name: Validate template
+        working-directory: services/${{ matrix.service }}
         run: sam validate -t services/${{ matrix.service }}/template.yaml
 
       - name: Build package # Not uploading the artifact, just testing if build passes
+        working-directory: services/${{ matrix.service }}
         run: sam build --use-container -t services/${{ matrix.service }}/template.yaml
