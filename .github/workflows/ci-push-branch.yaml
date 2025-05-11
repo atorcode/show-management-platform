@@ -94,7 +94,7 @@ jobs:
       - name: Format code
         working-directory: services/${{ matrix.service }}
         run: |
-          black . --check --diff # Mimics the check performed with pre-commit hook
+          poetry run black . --check --diff # Mimics the check performed with pre-commit hook
 
   lint:
     runs-on: ubuntu-latest
@@ -123,11 +123,11 @@ jobs:
 
       - name: Apply Pre-commit linting
         working-directory: services/${{ matrix.service }}
-        run: pre-commit run --all-files --show-diff-on-failure --verbose
+        run: poetry run pre-commit run --all-files --show-diff-on-failure --verbose
 
       - name: Apply Ruff linting
         working-directory: services/${{ matrix.service }}
-        run: ruff check .
+        run: poetry run ruff check .
 
       - name: Apply cfn-lint linting
         working-directory: services/${{ matrix.service }}
@@ -136,11 +136,11 @@ jobs:
             -path "*/template.yaml" -o -path "*/template.yml" -o \
             -path "infrastructure/*.yaml" -o -path "infrastructure/*.yml" -o \
             -path "templates/*.yaml" -o -path "templates/*.yml" \
-          \) -print0 | xargs -0 cfn-lint -v
+          \) -print0 | xargs -0 poetry run cfn-lint -v
 
       - name: Check types with Mypy
         working-directory: services/${{ matrix.service }}
-        run: mypy . --ignore-missing-imports
+        run: poetry run mypy . --ignore-missing-imports
 
   security-scan:
     runs-on: ubuntu-latest
@@ -169,11 +169,11 @@ jobs:
 
       - name: Run code scan
         working-directory: services/${{ matrix.service }}
-        run: bandit -r services/${{ matrix.service }} -x services/${{ matrix.service }}/tests
+        run: poetry run bandit -r . -x ./tests
 
       - name: Run dependency scan
         working-directory: services/${{ matrix.service }}
-        run: pip-audit
+        run: poetry run pip-audit
 
   test:
     runs-on: ubuntu-latest
@@ -204,7 +204,7 @@ jobs:
         working-directory: services/${{ matrix.service }}
         run: |
           export PYTHONPATH=services/${{ matrix.service }}
-          pytest -v services/${{ matrix.service }}/tests
+          poetry run pytest -v services/${{ matrix.service }}/tests
 
   build:
     runs-on: ubuntu-latest
