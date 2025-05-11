@@ -234,7 +234,7 @@ jobs:
       - name: Install dependencies
         working-directory: services/${{ matrix.service }}
         run: |
-          poetry install --no-dev --no-interaction --no-root
+          poetry install --only main --no-interaction --no-root
 
       - name: Ensure that AWS SAM CLI is installed
         working-directory: services/${{ matrix.service }}
