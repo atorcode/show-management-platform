@@ -223,7 +223,7 @@ jobs:
         working-directory: services/${{ matrix.service }}
         run: |
           export PYTHONPATH=.
-          poetry run pytest -v services/${{ matrix.service }}/tests
+          poetry run pytest -v ./tests
 
   build:
     runs-on: ubuntu-latest
