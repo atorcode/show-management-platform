@@ -272,7 +272,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: [detect-changes format, lint, security-scan, unit-test, build] # detect-changes must be specified in order to access outputs
+    needs: [detect-changes, format, lint, security-scan, unit-test, build] # detect-changes must be specified in order to access outputs
     if: ${{ needs.detect-changes.outputs.services != '[]' }}
     environment: Development
     strategy:
