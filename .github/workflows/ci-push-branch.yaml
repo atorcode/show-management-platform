@@ -30,10 +30,10 @@ jobs:
 
       - name: Show changed files
         run: |
-          echo "Base commit: ${{ github.event.before }}"
+          echo "Base commit: ${{ steps.get-base-commit.outputs.base_sha }}"
           echo "Head commit: ${{ github.sha }}"
           echo "Changed files:"
-          git diff --name-only ${{ github.event.before }} ${{ github.sha }}
+          git diff --name-only ${{ steps.get-base-commit.outputs.base_sha }} ${{ github.sha }}
 
       - name: Detect changed services
         id: filter
