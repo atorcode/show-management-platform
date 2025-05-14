@@ -278,7 +278,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [detect-changes, format, lint, security-scan, unit-test, build] # detect-changes must be specified in order to access outputs
     if: ${{ needs.detect-changes.outputs.services != '[]' }}
-    environment: Development
     strategy:
       matrix:
         service: ${{ fromJson(needs.detect-changes.outputs.services) }}
@@ -307,7 +306,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [detect-changes, deploy]
     if: ${{ needs.detect-changes.outputs.services != '[]' }}
-    environment: Development
     strategy:
       matrix:
         service: ${{ fromJson(needs.detect-changes.outputs.services) }}
