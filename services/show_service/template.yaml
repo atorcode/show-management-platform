@@ -33,14 +33,13 @@ Resources:
         - x86_64
       Tracing: Active
       Events:
-        # HelloPath:
-        #   Type: Api # More info about API Event Source: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-api.html
-        #   Properties:
-        #     Path: /hello
-        #     Method:
-        #       GET
-        #       # Powertools env vars: https://awslabs.github.io/aws-lambda-powertools-python/#environment-variables
-        ShowsProxy:
+        ShowsRoot:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApplicationApiGateway
+            Path: /shows
+            Method: ANY
+        ShowsWithSubpaths:
           Type: Api
           Properties:
             RestApiId: !Ref ApplicationApiGateway
@@ -68,6 +67,7 @@ Resources:
       ResourceGroupName:
         Ref: ApplicationResourceGroup
       AutoConfigurationEnabled: "true"
+
 Outputs:
   HelloWorldApi:
     Description: API Gateway endpoint URL for Prod environment for Hello World Function

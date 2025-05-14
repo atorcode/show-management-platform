@@ -1,0 +1,265 @@
+name: CI on Push for Feature Branch
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      services: ${{ steps.set.outputs.services }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # can become a bottleneck later as it fetches the whole commit history
+
+      - name: Get base commit for comparison with head
+        id: get-base-commit
+        run: |
+          # If this is a push to a new branch, github.event.before will be all zeros
+          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+            # Use the default branch as base for new branches
+            git fetch origin ${{ github.event.repository.default_branch }}
+            echo "base_sha=$(git merge-base origin/${{ github.event.repository.default_branch }} HEAD)" >> $GITHUB_OUTPUT
+          else
+            echo "base_sha=${{ github.event.before }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Show changed files
+        run: |
+          echo "Base commit: ${{ steps.get-base-commit.outputs.base_sha }}"
+          echo "Head commit: ${{ github.sha }}"
+          echo "Changed files:"
+          git diff --name-only ${{ steps.get-base-commit.outputs.base_sha }} ${{ github.sha }}
+
+      - name: Detect changed services
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          base: ${{ steps.get-base-commit.outputs.base_sha }}
+          ref: ${{ github.sha }}
+          filters: |
+            show_service:
+              - "services/show_service/**"
+            people_service:
+              - "services/people_service/**"
+            # Add more services here as needed
+
+      - name: Create JSON array of changed services
+        id: set
+        run: |
+          changed=()
+          if [[ "${{ steps.filter.outputs.show_service }}" == "true" ]]; then
+            changed+=("show_service")
+          fi
+          if [[ "${{ steps.filter.outputs.people_service }}" == "true" ]]; then
+            changed+=("people_service")
+          fi
+          echo "Changed services: ${changed[@]}"
+          # Create a new empty JSON array and pass in each member of the changed array as positional arguments. Save the resulting JSON array as the services output in the GitHub Actions environment.
+          echo "services=$(jq -c -n '$ARGS.positional' --args "${changed[@]}")" >> $GITHUB_OUTPUT
+
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.services != '[]' }}
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.detect-changes.outputs.services) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+      - name: Verify installations
+        working-directory: services/${{ matrix.service }}
+        run: |
+          echo "Poetry path: $(which poetry)"
+          poetry --version
+          ls -la $(poetry env info -p)/bin/
+
+      - name: List installed packages in Poetry environment
+        working-directory: services/${{ matrix.service }}
+        run: poetry run pip list
+
+      - name: Debug matrix services
+        run: |
+          echo "Matrix services: ${{ fromJson(needs.detect-changes.outputs.services) }}"
+
+      - name: Install dependencies
+        working-directory: services/${{ matrix.service }}
+        run: |
+          poetry install --only dev --no-interaction --no-root
+
+      - name: Format code
+        working-directory: services/${{ matrix.service }}
+        run: |
+          poetry run black . --check --diff # Mimics the check performed with pre-commit hook
+
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.services != '[]' }}
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.detect-changes.outputs.services) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        working-directory: services/${{ matrix.service }}
+        run: |
+          poetry install --only dev --no-interaction --no-root
+
+      - name: Apply Pre-commit linting
+        working-directory: services/${{ matrix.service }}
+        run: poetry run pre-commit run --all-files --show-diff-on-failure --verbose
+
+      - name: Apply Ruff linting
+        working-directory: services/${{ matrix.service }}
+        run: poetry run ruff check .
+
+      - name: Apply cfn-lint linting
+        working-directory: services/${{ matrix.service }}
+        run: |
+          find . -type f \( \
+            -path "*/template.yaml" -o -path "*/template.yml" -o \
+            -path "infrastructure/*.yaml" -o -path "infrastructure/*.yml" -o \
+            -path "templates/*.yaml" -o -path "templates/*.yml" \
+          \) -print0 | xargs -0 poetry run cfn-lint -v
+
+      - name: Check types with Mypy
+        working-directory: services/${{ matrix.service }}
+        run: poetry run mypy . --explicit-package-bases --ignore-missing-imports
+
+  security-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.services != '[]' }}
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.detect-changes.outputs.services) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        working-directory: services/${{ matrix.service }}
+        run: |
+          poetry install --no-interaction --no-root
+
+      - name: Run code scan
+        working-directory: services/${{ matrix.service }}
+        run: poetry run bandit -r . -x ./tests
+
+      - name: Run dependency scan
+        working-directory: services/${{ matrix.service }}
+        run: poetry run pip-audit
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.services != '[]' }}
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.detect-changes.outputs.services) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        working-directory: services/${{ matrix.service }}
+        run: |
+          poetry install --no-interaction --no-root
+
+      - name: Run unit tests
+        working-directory: services/${{ matrix.service }}
+        run: |
+          export PYTHONPATH=.
+          poetry run pytest -v ./tests
+
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.services != '[]' }}
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.detect-changes.outputs.services) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        working-directory: services/${{ matrix.service }}
+        run: |
+          poetry install --only main --no-interaction --no-root
+
+      - name: Ensure that AWS SAM CLI is installed
+        working-directory: services/${{ matrix.service }}
+        run: sam --version || echo "SAM not installed"
+
+      - name: Validate template
+        working-directory: services/${{ matrix.service }}
+        run: sam validate -t ./template.yaml
+
+      - name: Build package # Not uploading the artifact, just testing if build passes
+        working-directory: services/${{ matrix.service }}
+        run: sam build --use-container -t ./template.yaml

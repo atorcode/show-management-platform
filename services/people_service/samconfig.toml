@@ -3,7 +3,7 @@
 version = 0.1
 
 [default.global.parameters]
-stack_name = "ShowService"
+stack_name = "PeopleService"
 
 [default.build.parameters]
 cached = true
@@ -16,8 +16,7 @@ lint = true
 capabilities = "CAPABILITY_IAM"
 confirm_changeset = true
 resolve_s3 = true
-stack_name = "ShowService"
-s3_prefix = "ShowService"
+s3_prefix = "PeopleService"
 region = "us-west-2"
 image_repositories = []
 
