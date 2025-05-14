@@ -291,6 +291,21 @@ jobs:
           name: ${{ matrix.service }}-sam-build
           path: services/${{ matrix.service }}/.aws-sam/build
 
+      # DEBUG
+      - name: Request OIDC Token
+        id: oidc_token
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const idToken = await core.getIDToken();
+            core.setOutput("id_token", idToken);
+
+      - name: Print OIDC token sub claim
+        run: |
+          echo "${ID_TOKEN}" | cut -d '.' -f2 | base64 -d | jq '.sub'
+        env:
+          ID_TOKEN: ${{ steps.oidc_token.outputs.id_token }}
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
